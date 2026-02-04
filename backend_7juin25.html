@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Évaluation de Crédibilité</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Le script pour les icônes sera déplacé à la fin du body pour un chargement optimal -->
+    <style>
+        /* Style personnalisé pour la jauge */
+        .gauge-container {
+            width: 200px;
+            height: 100px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 100px 100px 0 0;
+        }
+        .gauge-background {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #ef4444, #eab308, #22c55e); /* Red-Yellow-Green */
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .gauge-mask {
+            width: 100%;
+            height: 100%;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: bottom center;
+            /* La rotation sera ajustée par JS */
+            transition: transform 0.5s ease-in-out;
+        }
+        .gauge-center {
+            width: 160px;
+            height: 80px;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            border-radius: 80px 80px 0 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 5px;
+        }
+        .gauge-score {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: bold;
+        }
+        .gauge-label {
+            font-size: 0.75rem; /* text-xs */
+            color: #6b7280; /* text-gray-500 */
+        }
+        /* Style pour surligner les mots (explication LIME) */
+        .highlight-positive { background-color: rgba(34, 197, 94, 0.3); padding: 0 2px; border-radius: 3px; }
+        .highlight-negative { background-color: rgba(239, 68, 68, 0.3); padding: 0 2px; border-radius: 3px; }
+
+        /* Style pour les barres simples */
+        .bar-container {
+            height: 10px;
+            background-color: #e5e7eb; /* bg-gray-200 */
+            border-radius: 5px;
+            overflow: hidden;
+            width: 100px; /* Ajuster si nécessaire */
+        }
+        .bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans p-4 md:p-8">
+
+    <div class="container mx-auto max-w-3xl bg-white shadow-lg rounded-lg p-6 md:p-8">
+
+        <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
+            Système d'Évaluation de la Crédibilité de l'Information
+        </h1>
+
+        <div class="mb-6">
+            <label for="inputData" class="block text-sm font-medium text-gray-700 mb-2">
+                Entrez une URL ou collez du texte :
+            </label>
+            <textarea id="inputData" rows="4" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" placeholder="Ex: https://www.example.com ou 'Ce texte semble suspect...'"></textarea>
+            <button id="verifyButton" class="mt-3 w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out disabled:opacity-50">
+                <i data-lucide="search" class="mr-2 h-5 w-5"></i> Vérifier la Crédibilité
+            </button>
+        </div>
+
+        <div id="reportSection" class="hidden mt-8 border-t border-gray-200 pt-6">
+            <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-4 text-center">Rapport d'Analyse</h2>
+
+            <div class="flex flex-col items-center mb-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-medium text-gray-700 mb-2">Score de Crédibilité Global</h3>
+                <div class="gauge-container mb-2">
+                    <div class="gauge-background"></div>
+                    <div id="gaugeMask" class="gauge-mask"></div>
+                    <div class="gauge-center">
+                        <span id="gaugeScore" class="gauge-score">--</span>
+                        <span class="gauge-label">0 = Faible, 10 = Élevé</span>
+                    </div>
+                </div>
+                <p id="reportSummary" class="text-center text-gray-600 text-sm italic"></p>
+            </div>
+             
+             <!-- Section des constats (findings) -->
+            <div id="findingsSection" class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                 <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2 flex items-center">
+                    <i data-lucide="list-checks" class="mr-2 h-5 w-5 text-indigo-600"></i> Détails de l'Évaluation
+                 </h4>
+                 <div id="findingsList" class="space-y-2">
+                     <!-- Les constats (findings) du backend seront insérés ici -->
+                 </div>
+            </div>
+
+        </div> 
+        
+        <div id="loadingIndicator" class="hidden text-center mt-6">
+             <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-indigo-700 bg-white transition ease-in-out duration-150 cursor-not-allowed">
+                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                 </svg>
+                 Analyse en cours...
+            </div>
+        </div>
+
+        <div id="errorSection" class="hidden mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+             <h4 class="font-bold flex items-center"><i data-lucide="alert-triangle" class="mr-2 h-5 w-5"></i> Erreur</h4>
+             <p id="errorMessage" class="text-sm"></p>
+        </div>
+
+    </div>
+
+    <!-- ===== CORRECTION : Scripts déplacés à la fin du body ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide-static@latest/dist/lucide.min.js"></script>
+    <script>
+        // On attend que le DOM soit entièrement chargé avant d'exécuter le script.
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Éléments DOM ---
+            const inputDataEl = document.getElementById('inputData');
+            const verifyButton = document.getElementById('verifyButton');
+            const reportSection = document.getElementById('reportSection');
+            const errorSection = document.getElementById('errorSection');
+            const errorMessageEl = document.getElementById('errorMessage');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+
+            // Éléments du rapport
+            const gaugeScoreEl = document.getElementById('gaugeScore');
+            const gaugeMaskEl = document.getElementById('gaugeMask');
+            const reportSummaryEl = document.getElementById('reportSummary');
+            const findingsListEl = document.getElementById('findingsList');
+
+
+            // Initialiser Lucide Icons
+            lucide.createIcons();
+
+            // --- Logique ---
+
+            verifyButton.addEventListener('click', handleVerificationRequest);
+
+            async function handleVerificationRequest() {
+                const inputText = inputDataEl.value.trim();
+                if (!inputText) {
+                    showError("Veuillez entrer une URL ou du texte.");
+                    return;
+                }
+
+                // Afficher le chargement, masquer l'ancien rapport/erreur
+                loadingIndicator.classList.remove('hidden');
+                reportSection.classList.add('hidden');
+                errorSection.classList.add('hidden');
+                verifyButton.disabled = true;
+
+                try {
+                    // =================================================================
+                    // === MODIFICATION CLÉ : APPEL RÉEL AU SERVEUR (BACKEND) ===
+                    // =================================================================
+                    
+                    // METTEZ VOTRE URL NGROK ICI !
+                    const apiUrl = 'https://37e9-34-136-178-210.ngrok-free.app/api/verify'; // <--- REMPLACEZ PAR VOTRE URL NGROK
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ input_data: inputText })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `Erreur serveur: ${response.status}`);
+                    }
+                    const reportData = await response.json();
+                    
+                    // Afficher le rapport
+                    displayReport(reportData);
+                    reportSection.classList.remove('hidden');
+
+                } catch (error) {
+                    console.error("Erreur lors de la vérification:", error);
+                    showError(error.message || "Une erreur inconnue est survenue. Vérifiez l'URL du serveur et que celui-ci est bien en cours d'exécution.");
+                } finally {
+                    // Masquer le chargement, réactiver le bouton
+                    loadingIndicator.classList.add('hidden');
+                    verifyButton.disabled = false;
+                }
+            }
+
+            function displayReport(report) {
+                // 1. Score Global et Résumé
+                const score = report.final_score; // Le score est maintenant sur 10
+                gaugeScoreEl.textContent = score.toFixed(1);
+                // Calculer l'angle pour le masque de la jauge (0 score = 0 deg, 10 score = 180 deg)
+                const rotation = Math.max(0, Math.min(180, (10 - score) / 10 * 180));
+                gaugeMaskEl.style.transform = `rotate(${rotation}deg)`;
+                reportSummaryEl.textContent = report.summary || "Résumé non disponible.";
+                
+                // 2. Afficher les constats (findings)
+                findingsListEl.innerHTML = ''; // Vider la liste précédente
+                if (report.findings && report.findings.length > 0) {
+                    report.findings.forEach(finding => {
+                        const impactColor = finding.impact >= 0 ? 'text-green-600' : 'text-red-600';
+                        const bgColor = finding.impact >= 0 ? 'bg-green-50' : 'bg-red-50';
+                        const icon = finding.impact >= 0 
+                            ? `<i data-lucide="arrow-up-circle" class="h-5 w-5 text-green-500"></i>`
+                            : `<i data-lucide="arrow-down-circle" class="h-5 w-5 text-red-500"></i>`;
+
+                        const findingElement = document.createElement('div');
+                        findingElement.className = `p-2 ${bgColor} rounded-md flex items-start space-x-3`;
+                        findingElement.innerHTML = `
+                            <div class="flex-shrink-0 pt-0.5">${icon}</div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-gray-800">${finding.source}</p>
+                                <p class="text-sm text-gray-600">${finding.description}</p>
+                                ${finding.evidence ? `<p class="text-xs text-gray-500 mt-1"><em>Évidence: ${finding.evidence}</em></p>` : ''}
+                            </div>
+                            <div class="font-semibold text-sm ${impactColor}">
+                                ${finding.impact > 0 ? '+' : ''}${(finding.impact * 5).toFixed(1)}
+                            </div>
+                        `;
+                        findingsListEl.appendChild(findingElement);
+                    });
+                } else {
+                    findingsListEl.innerHTML = `<p class="text-sm text-gray-500 text-center">Aucun détail spécifique n'a été généré pour cette analyse.</p>`;
+                }
+                lucide.createIcons(); // Recréer les icônes ajoutées dynamiquement
+            }
+
+            // --- Gestion des erreurs ---
+            function showError(message) {
+                errorMessageEl.textContent = message;
+                errorSection.classList.remove('hidden');
+                reportSection.classList.add('hidden'); // Masquer le rapport si erreur
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "starred": false,
+  "editors_can_edit_access": true,
+  "last_modified_by_any_user": "2025-06-07T19:49:29Z",
+  "last_modified_by_me": "2025-06-07T19:49:29Z",
+  "content_last_modified": "2025-06-07T19:49:29Z",
+  "created": "2025-07-05T22:26:24.625Z",
+  "permissions": [
+    {
+      "id": "17298855329887496844",
+      "name": "Sherbrooke Informatique",
+      "type": "user",
+      "role": "owner",
+      "value": "votreconsultant@gmail.com",
+      "kind": "drive#permission",
+      "photo_link": "https://lh3.googleusercontent.com/a/ACg8ocJhz2wABBxfm4ha6GgUH2PVgnh3oLRHoagLpKf5l1l6Wk7sAdPG=s64",
+      "email_address": "votreconsultant@gmail.com",
+      "domain": "gmail.com",
+      "deleted": false,
+      "pending_owner": false
+    }
+  ],
+  "title": "Analyse et Stratégie XAI pour le Système de Vérification_7juin25.pdf",
+  "drive_id": "1VcedYUiDQ6BdFQavSrJyWUMdTRQtZUzK",
+  "mime_type": "application/pdf"
+}

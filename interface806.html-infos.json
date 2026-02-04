@@ -1,0 +1,26 @@
+{
+  "starred": false,
+  "editors_can_edit_access": true,
+  "last_modified_by_any_user": "2025-06-08T17:34:36Z",
+  "last_modified_by_me": "2025-06-08T17:34:36Z",
+  "content_last_modified": "2025-06-08T17:34:36Z",
+  "created": "2025-07-05T22:26:22.663Z",
+  "permissions": [
+    {
+      "id": "17298855329887496844",
+      "name": "Sherbrooke Informatique",
+      "type": "user",
+      "role": "owner",
+      "value": "votreconsultant@gmail.com",
+      "kind": "drive#permission",
+      "photo_link": "https://lh3.googleusercontent.com/a/ACg8ocJhz2wABBxfm4ha6GgUH2PVgnh3oLRHoagLpKf5l1l6Wk7sAdPG=s64",
+      "email_address": "votreconsultant@gmail.com",
+      "domain": "gmail.com",
+      "deleted": false,
+      "pending_owner": false
+    }
+  ],
+  "title": "interface806.html",
+  "drive_id": "15xqJGW1OfuWx7yl2TuFEPisqD5kv9zvA",
+  "mime_type": "text/html"
+}
