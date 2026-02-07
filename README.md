@@ -3,7 +3,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![SysCRED](https://img.shields.io/badge/Integrated_in-SysCRED-blue)](https://github.com/DominiqueLoyer/systemFactChecking)
 **Backend Flask pour système hybride de vérification de crédibilité avec Explainable AI (XAI)**
 
 PhD Research - Dominique S. Loyer | UQAM
